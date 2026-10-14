@@ -1,0 +1,24 @@
+{
+  "version": {
+    "name": "1.21.11",
+    "protocol": 774
+  },
+  "players": {
+    "max": 20,
+    "online": 2,
+    "sample": [
+      {
+        "name": "Steve",
+        "id": "5627dd98-e6be-3c21-b8a8-e92344183641"
+      },
+      {
+        "name": "Anonymous Player",
+        "id": "00000000-0000-0000-0000-000000000000"
+      }
+    ]
+  },
+  "description": {
+    "text": "Family server"
+  },
+  "enforcesSecureChat": true
+}

@@ -1,0 +1,1 @@
+MCPE;Dummy MOTD;123;Dummy Version;3;10;Dummy Server ID;Dummy Map Name;Dummy Game Mode

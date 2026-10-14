@@ -30,6 +30,22 @@ Gladys before reporting a problem.
 
 In scope: the code of this repository and the Docker image it publishes.
 
+What the integration handles:
+
+- **Secrets**: the RCON passwords are `secret` fields of the Gladys
+  configuration. The integration reads them from Gladys, keeps them in memory,
+  sends them only to the RCON port of the server they belong to, and never
+  writes them to `/data` nor to the logs. RCON runs any command on the server:
+  the integration only ever sends `list` and `say <message>`, the message
+  cleaned to one line, and a scene cannot send anything else.
+- **Stored in `/data`**: nothing.
+- **Network**: the integration connects only to the addresses typed in the
+  configuration: TCP to the Java Edition port (25565 by default) and to the
+  RCON port, UDP to the Bedrock Edition port (19132 by default), and a DNS SRV
+  lookup (`_minecraft._tcp.<name>`) for a Java name typed without port. RCON is
+  not encrypted (a limit of the Minecraft protocol): keep it on the local
+  network. The integration opens no port and calls no cloud service.
+
 Out of scope: Gladys Assistant itself (see its
 [security policy](https://github.com/GladysAssistant/Gladys/security/policy)),
-and the third-party services and devices the integration talks to.
+Minecraft servers and their plugins, and the Minecraft protocols themselves.
