@@ -8,8 +8,8 @@
     "de": "Minecraft-Server Java oder Bedrock: wer spielt, Kommen und Gehen, Chat per RCON.",
     "es": "Servidor Minecraft Java o Bedrock: quién juega, llegadas y salidas, chat por RCON."
   },
-  "version": "1.0.0",
-  "docker_image": "ghcr.io/guim31/gladys-minecraft:1.0.0",
+  "version": "1.0.1",
+  "docker_image": "ghcr.io/guim31/gladys-minecraft:1.0.1",
   "gladys_version": ">=5.1.0",
   "cover_image": "https://raw.githubusercontent.com/guim31/gladys-minecraft/main/cover.png",
   "categories": ["multimedia", "services"],

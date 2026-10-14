@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-14
+
 ### Added
 
 - One Gladys device per Minecraft server (up to three, Java Edition or Bedrock
@@ -27,3 +29,6 @@ the notes of the version's GitHub Release.
 - A "Test the connection" button, and a connection status naming the server and
   the problem.
 - Texts and documentation in English, French, German and Spanish.
+
+[Unreleased]: https://github.com/guim31/gladys-minecraft/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/guim31/gladys-minecraft/releases/tag/v1.0.1
