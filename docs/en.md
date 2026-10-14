@@ -1,61 +1,178 @@
-# Demo Devices Template
+# Minecraft Server
 
-This is the user documentation of the integration. Gladys re-hosts this file
-and shows a permanent **Documentation** link to it in the Configuration screen
-(in the user's language, with English as the fallback) — it is when
-configuring that the user needs it most. Keep the short onboarding hints in
-the `section` blocks of the manifest `config_schema`; put the long
-step-by-step (screenshots, troubleshooting…) here.
+Follow your **Minecraft server** from Gladys: whether it is online, how many
+players are on it and who, its version and its message of the day. Gladys can
+react when a player joins or leaves, or when the server stops, and send a
+message in the game chat ("Dinner is ready!") through RCON. Java Edition and
+Bedrock Edition, at home (a NAS, a Raspberry Pi, a PC) or on the Internet.
 
-## What you get
+The integration reads the server like the multiplayer screen of the game does
+(the "Server List Ping"): no Minecraft account, no plugin, nothing to install
+on the server. This integration is not affiliated with Mojang or Microsoft.
 
-Six demo devices show up after installation: a weather station (real data
-from Open-Meteo), a switch, a dimmable light, a smart plug with power
-metering, a motion sensor and a camera.
+> **Developed without the hardware: feedback welcome.** The Java Edition part
+> was tested against a real vanilla 1.21.11 server; the Bedrock Edition part
+> only against answers documented by others, and nothing was tested inside a
+> real Gladys yet. If something does not work as described, please say so on
+> the [Gladys forum](https://community.gladysassistant.com) or in the
+> [issues](https://github.com/guim31/gladys-minecraft/issues).
 
-## Configuration
+## What you need
 
-1. Open the **Configuration** tab of the integration.
-2. Set the **latitude** and **longitude** the demo weather station should
-   observe (they default to Paris), and pick your temperature unit.
-   The **refresh interval** sets how often the weather station and the
-   plug's power are read: every 5 minutes by default, every minute at most.
-3. Save: the devices appear in the **Discovery** tab, ready to be added.
+- Gladys Assistant 5.1.0 or later.
+- A Minecraft server reachable from Gladys: **Java Edition** 1.7 or later
+  (vanilla, Paper, Spigot, Fabric, Forge, a BungeeCord or Velocity proxy…) or
+  **Bedrock Edition** (Bedrock Dedicated Server, or a server with a Bedrock
+  port). A server on the Internet works too: Gladys reads it directly.
+- In the `server.properties` of the server, `enable-status=true` (the default).
+- Optional, Java Edition only: **RCON**, for the complete list of players and
+  the chat messages. In `server.properties`: `enable-rcon=true`,
+  `rcon.password=` a password of its own, `rcon.port=25575` (the default).
+  Restart the server after the change.
 
-The **Prefer the local connection** toggle drives the demo plug: it reports
-the channel it actually uses as a badge (local or cloud), with an orange dot
-when it runs degraded (local refused, cloud fallback).
+## Set up
 
-## Actions
+1. Install the integration from the Gladys catalog.
+2. In **Configuration**, enter the **Address** of the server, as you type it in
+   the game: `192.168.1.20`, `mc.example.com`, or `192.168.1.20:25570` when the
+   port is not the default one (Java 25565, Bedrock 19132). For a Java name
+   without port, the SRV record `_minecraft._tcp` is used, like in the game.
+   Pick the **Edition** and optionally a **Name**.
+3. RCON (optional, Java): tick **Use RCON**, enter the **RCON port** and the
+   **RCON password**.
+4. Save, then click **Test the connection**: the message under the button says,
+   for each server, whether it answers, its version, the players and whether
+   RCON works.
+5. Open the **Discover** tab: one device per server. Click **Add**, pick a
+   room, save.
 
-- **Test the weather provider** — performs a live request to Open-Meteo and
-  shows the current temperature and humidity under the button.
-- **Identify a device** — pick one of your devices in the list and it will
-  signal itself (the demo light "blinks" in the logs).
+Up to three servers: fill in the _Second server_ and _Third server_ sections.
+Other options:
 
-## Scenes
+- **Refresh interval**: how often the servers are read, from 15 seconds to 5
+  minutes (30 seconds by default). An arrival is seen at most that late. A
+  status request is a few hundred bytes: even every 15 seconds, the server
+  does not notice it.
+- **Language of the feature names**: English, French, German or Spanish (French
+  by default). The names are given when a device is added; the players text
+  and the scene events use it too.
 
-The integration adds its own cards to the scene editor (Gladys 5.1 or
-later), under the **Integrations** category:
+## The device of each server
 
-- **Motion detected** (trigger) — starts the scene when a demo motion sensor
-  sees something move. Optionally pick the sensor and what moved (person,
-  animal); left empty, any detection matches. The following actions can
-  read what moved with `{{triggerEvent.data.target}}`.
-- **Identify a device** (action) — makes the chosen device signal itself.
-  It returns whether the device could signal itself, so the following
-  actions can depend on it.
+| Feature            | What it is                                                                                 |
+| ------------------ | ------------------------------------------------------------------------------------------ |
+| Online             | 1 when the server answers, 0 once it failed to answer twice in a row                       |
+| Players online     | How many players are on the server                                                         |
+| Player slots       | The `max-players` of the server                                                            |
+| Players            | Who is playing (Java Edition only), "Nobody", or a note when the list is partial or hidden |
+| Version            | The version the server announces (`1.21.11`, `Paper 1.21.4`, `Velocity 3.4.0`…)            |
+| Message of the day | The MOTD, without its colors, its two lines joined by "·"                                  |
+| Latency            | The time the status request took, in milliseconds                                          |
+
+A **Bedrock Edition** server never tells who is playing: its device has no
+_Players_ feature, and the join and leave triggers do not fire for it. When the
+server is offline, _Online_ and _Players online_ go to 0, _Players_ says so,
+and the version and the MOTD keep their last value.
+
+**Who is playing, Java Edition**: without RCON, the names come from the
+"sample" of the status answer. The vanilla server puts **12 players at most**
+in it, picked at random; `hide-online-players=true` removes it; a player who
+turned off _Allow Server Listings_ shows as "Anonymous Player"; some plugins
+and proxies replace it with text. The _Players_ text says when the list is
+partial ("and 3 more") or hidden. With **RCON**, the integration asks the
+server for its complete list (the `list` command).
 
 ## Dashboard
 
-Add the **Demo status** widget to a dashboard: it shows the live
-temperature of the weather station and the power of the office plug, the
-connection the plug currently uses (orange when degraded) and the observed
-location. Its **Identify the light** button makes the demo light signal
-itself.
+Add the **Minecraft** widget to a dashboard: for each server (all of them, or
+the one chosen in the widget settings), a tile with the players online and the
+slots, green when the server answers, red when it is offline; and a list with
+the state of each server, its version and who is playing. With one server, a
+second tile shows the latency.
+
+## Scenes
+
+The integration adds its own cards to the scene editor (Gladys 5.1 or later).
+
+### Triggers
+
+- **A player joined the Minecraft server** — filters: the server (empty: any)
+  and the player name (empty: anyone; exactly as in the game, case included).
+  Variables: `player`, `server`, `device`, `players_online`.
+- **A player left the Minecraft server** — same filters. Variables: `player`,
+  `server`, `device`, `players_online`, `minutes_played` (how long the player
+  stayed, empty when the player was already there when the integration
+  started).
+- **Minecraft server offline** — the server no longer answers, twice in a row
+  (a single lost answer is ignored). Filter: the server. Variables: `server`,
+  `device`, `error` (the reason, in the configured language).
+
+The join and leave triggers need the **complete** list of players: with RCON
+always; without RCON, only while the server shows 12 players or fewer and no
+hidden name. When the list is partial, no join or leave is invented: they are
+not reported. When the whole server stops, only _Minecraft server offline_
+fires, not one departure per player; when it comes back, the players already
+there are not reported as arrivals.
+
+### Actions
+
+- **Send a message in the Minecraft chat** — to one server, or to every server
+  with RCON when the server field is empty. One line, 256 characters at most;
+  the message may use the variables of the scene
+  (`Welcome {{triggerEvent.data.player}}!`). The players see it as
+  `[Rcon] Dinner is ready!`: it is the `say` command of the server, and the
+  only command the integration sends besides `list`. Needs RCON (Java Edition).
+  Output: `servers`, how many servers took the message.
+
+On the Configuration screen, **Test the connection** reads every server now.
+
+### Scene ideas
+
+- **Dinner time**: at 7:30 pm, _Send a message in the Minecraft chat_ "Dinner is
+  ready! Save and come down 🍽️".
+- **Who is on?** When _A player joined the Minecraft server_, send a Gladys
+  message to the parents: "{{triggerEvent.data.player}} joined
+  {{triggerEvent.data.server}}".
+- **Bedtime**: on school days at 9 pm, if _Players online_ is above 0, send "Last
+  5 minutes!" in the chat, then turn off the gaming PC's smart plug at 9:05 pm.
+- **The server crashed**: when _Minecraft server offline_, send a notification
+  with `{{triggerEvent.data.error}}` to the person who runs the server.
 
 ## Troubleshooting
 
-The integration logs everything it does: check the integration logs from the
-Gladys UI (or `docker logs` on the host) with `LOG_LEVEL=debug` for the full
-detail.
+- **"does not answer"**: check the address and the port from the computer
+  running Gladys, that `enable-status=true`, and that a firewall lets the port
+  through (TCP 25565 for Java, **UDP** 19132 for Bedrock). Gladys runs the
+  integration in a Docker container: `localhost` there is not your server, use
+  its IP address on your network.
+- **"not a Minecraft server of this edition"**: something answers on that port
+  but not like a Minecraft server of the chosen edition: check the **Edition**
+  (a Bedrock server does not answer the Java request) and the port.
+- **"name not found"**: the name does not resolve from Gladys; use the IP
+  address.
+- **"RCON password refused"**: the password is not the `rcon.password` of the
+  server. **"RCON does not answer"**: `enable-rcon=true` missing, wrong
+  **RCON port**, or the port blocked by a firewall. RCON problems never make the
+  server "offline": the status keeps working.
+- **No names in _Players_**: the server hides them (see above): enable RCON.
+- To see more: set `LOG_LEVEL=debug` on the container; the integration then
+  logs each reading, each join and each leave. It never logs the RCON password.
+
+## Limits
+
+- Java Edition 1.7 or later: the servers older than 1.7 (2013, the old
+  "legacy" ping) are not supported.
+- Who is playing: Java Edition only, 12 names at most without RCON (see above).
+  Bedrock Edition only tells how many players are online.
+- A join or a leave is seen at the next reading (30 seconds by default): a
+  player who comes and goes between two readings is not seen.
+- One RCON connection is kept open per server: the vanilla server writes two
+  lines in its log for each new RCON connection, and reconnecting every 30
+  seconds would flood it.
+- Chat messages go through `say`: the game shows them with the `[Rcon]` prefix.
+  No other command is possible from Gladys, on purpose.
+- No automatic discovery of the servers on the network: Gladys runs the
+  integration in an isolated container that does not see the LAN broadcasts of
+  the game. Type the address.
+- Developed without a real Gladys and without a real Bedrock server: what was
+  not checked on them is listed in the README of the repository.

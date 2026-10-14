@@ -1,0 +1,38 @@
+{
+  "version": {
+    "name": "Velocity 3.4.0",
+    "protocol": 774
+  },
+  "players": {
+    "max": 500,
+    "online": 2,
+    "sample": [
+      {
+        "name": "§6§lWelcome to the network!",
+        "id": "00000000-0000-0000-0000-000000000000"
+      },
+      {
+        "name": "§7Play at play.example.com",
+        "id": "00000000-0000-0000-0000-000000000000"
+      }
+    ]
+  },
+  "description": {
+    "text": "",
+    "extra": [
+      {
+        "text": "Example ",
+        "color": "gold",
+        "bold": true
+      },
+      {
+        "text": "Network\n",
+        "color": "aqua"
+      },
+      {
+        "text": "§7Survival · Creative"
+      }
+    ]
+  },
+  "favicon": "data:image/png;base64,iVBORw0KGgo="
+}

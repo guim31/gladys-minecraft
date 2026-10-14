@@ -16,8 +16,9 @@ its only runtime dependency. It started from the official JavaScript template.
 ```bash
 npm install
 npm test                                  # node --test, the built-in runner
-node --test test/devices.test.js          # one file
-node --test --test-name-pattern "plug"    # tests whose name matches
+node --test test/hub.test.js              # one file
+node --test --test-name-pattern "RCON"    # tests whose name matches
+npm run test:real                         # against a real server (env, see test/real/)
 npm run lint                              # ESLint
 npm run format:check                      # Prettier, as the CI runs it
 npm run format                            # Prettier, fix in place
@@ -31,16 +32,27 @@ pushing.
 ## Architecture
 
 ```
-index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
-src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+index.js                          SDK wiring only: src/app.js registers the handlers before connect()
+src/app.js                        every SDK handler -> the hub (also used by the tests)
+src/hub.js                        servers, reading timer, states, join/leave/offline -> scene events, chat, deduplicated logs
+src/devices.js                    one device per configured server: features, names (4 languages), values
+src/minecraft/java.js             Java Edition Server List Ping (TCP), varint.js its VarInt and packets
+src/minecraft/bedrock.js          Bedrock Edition RakNet Unconnected Ping (UDP)
+src/minecraft/rcon.js             RCON client, one connection kept open per server (list, say)
+src/minecraft/model.js            status / RCON list -> what Gladys shows (players list complete or not)
+src/minecraft/motd.js             text components and § codes -> plain text
+src/minecraft/address.js          addresses as typed in the game, SRV lookup of Java Edition
+src/scenes.js                     scene action handler (manifest `scene_actions`)
+src/widgets.js                    dashboard widget `minecraft` (manifest `widgets`)
+src/texts.js                      connection, error, players, report and action texts (4 languages)
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
-test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (en and fr mandatory)
+test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing),
+                                  helpers/fakeNetwork.js (hub) and helpers/fakeSockets.js (protocols,
+                                  real loopback sockets replaying test/fixtures/minecraft/real)
+test/real/                        optional tests against a real server (`npm run test:real`)
+scripts/probe.mjs                 read-only probe of a real server (prints no name, no password)
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,8 +82,10 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** exists in English, French, German and Spanish: action
+  messages, widget content, feature names, manifest texts, and
+  `docs/en.md`, `docs/fr.md`, `docs/de.md`, `docs/es.md`, kept in sync
+  (`test/i18n.test.js` checks the languages and the doc sections).
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -197,6 +211,52 @@ code de ce dépôt. Compléter ce fichier quand un nouveau piège est découvert
 - Les filtres de scène ne font qu'égalité et appartenance : un seuil reste le travail d'un capteur.
 - **Les clés de widgets, de déclencheurs et d'actions sont figées une fois publiées.**
 - `gladys_version` `>=5.1.0` dès qu'il y a widgets, déclencheurs ou actions de scène.
+- Les filtres `string` d'un déclencheur comparent **à l'identique** (`===`) : un pseudo filtré
+  doit être saisi avec sa casse exacte. Le dire dans la description du champ.
+
+**Store et formulaires**
+
+- Un champ `secret` du `config_schema` **ne peut pas avoir de `default`** : le validateur du store
+  rejette le manifeste (« not allowed for secret fields »).
+
+## Minecraft (propre à ce dépôt)
+
+- **Protocoles écrits à la main, sans dépendance** (`src/minecraft/`) : Server List Ping Java (TCP,
+  handshake protocole 47 comme mcstatus, Status Response JSON, Ping/Pong pour la latence), Unconnected
+  Ping RakNet Bedrock (UDP, renvoyé chaque seconde), RCON. Pas de ping « legacy » (< 1.7). Un nom Java
+  sans port passe par le SRV `_minecraft._tcp.<nom>`, puis 25565.
+- **L'échantillon `players.sample` n'est pas une liste** (vérifié sur un vrai vanilla 1.21.11) :
+  12 joueurs au plus, **tirés au hasard** à chaque requête ; `hide-online-players=true` **supprime la
+  clé** (pas de liste vide) ; « Anonymous Player » à l'UUID nul pour qui a coupé « Allow Server
+  Listings » ; texte libre `§…` sur les proxys. `model.js` ne la tient pour complète que si elle a
+  exactement `online` vrais noms ; les déclencheurs arrivée/départ ne comparent que deux listes
+  complètes (sinon : nouvelle base silencieuse). Un serveur qui tombe ne déclenche pas un départ par
+  joueur ; à son retour, les présents ne sont pas des arrivées.
+- **RCON** : le vanilla écrit **deux lignes INFO dans son journal à chaque connexion** (« Thread RCON
+  Client … started / shutting down ») : une connexion par serveur, **gardée ouverte** (vérifié : 150 s
+  d'inactivité sans coupure), rouverte après une coupure. Mot de passe refusé = paquet d'id `-1`, type 2.
+  Réponses découpées en morceaux de 4096 octets. `say` arrive en jeu sous la forme `[Rcon] message`
+  (`[Not Secure]` dans le journal). Seuls `list` et `say <message nettoyé>` partent : jamais de
+  commande arbitraire (une scène ne doit pas devenir une console).
+- **Bedrock** ne donne jamais les noms : pas de fonctionnalité _Joueurs_, pas d'arrivée/départ. La
+  chaîne d'annonce peut avoir un `;` dans le MOTD et une version vide.
+- Identité = **emplacement** de la configuration (1 à 3) : le GUID Bedrock change à chaque démarrage,
+  et Java n'a aucun identifiant de serveur.
+- Les états ne partent que vers les appareils **ajoutés** (`gladys.devices`), mais **tous** les
+  serveurs configurés sont lus : les déclencheurs et le widget en ont besoin sans appareil ajouté.
+- **Test réel dans la session** : le proxy refuse les hôtes Mojang (`piston-data.mojang.com`…) ; l'image
+  Docker Hub `webhippie/minecraft-vanilla` embarque le `server.jar` officiel (1.21.11 le 14/10/2026,
+  `MINECRAFT_ONLINE_MODE=false`, RCON actif par défaut, `MINECRAFT_SKIP_SERVER_PROPERTIES=true` pour un
+  `server.properties` monté). Bots hors ligne : `minecraft-protocol` (npm, outil de session seulement).
+  Le Bedrock Dedicated Server (images `pjnetnz/bedrock-server`, `godfool/bedrock-server`) **ne peut pas
+  ouvrir son port UDP** dans le bac à sable (« Port may be in use ») : tester Bedrock ailleurs
+  (`scripts/probe.mjs bedrock <adresse>`). L'image de l'intégration ne se construit pas telle quelle dans
+  la session (ECR Public refusé, Docker Hub en 429, pas d'`apk`) : construire avec un Dockerfile
+  temporaire hors dépôt (`mirror.gcr.io/library/node`, sans `dumb-init`).
+- Piste pour plus tard : depuis 1.21.9, le serveur vanilla a un **protocole de gestion** officiel
+  (`management-server-*` dans `server.properties`, JSON-RPC sur WebSocket, TLS et secret) : liste des
+  joueurs, liste blanche, sauvegarde… sans RCON. Pas utilisé ici (trop récent pour les serveurs des
+  familles), à évaluer.
 
 ## Store
 

@@ -1,177 +1,1010 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "Minecraft Server",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Minecraft Java or Bedrock server: who is playing, arrivals and departures, chat via RCON.",
+    "fr": "Serveur Minecraft Java ou Bedrock : qui joue, arrivées et départs, chat par RCON.",
+    "de": "Minecraft-Server Java oder Bedrock: wer spielt, Kommen und Gehen, Chat per RCON.",
+    "es": "Servidor Minecraft Java o Bedrock: quién juega, llegadas y salidas, chat por RCON."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
+  "docker_image": "ghcr.io/guim31/gladys-minecraft:1.0.0",
   "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-minecraft/main/cover.png",
+  "categories": ["multimedia", "services"],
+  "transports": ["local"],
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "Your Minecraft server",
+        "fr": "Votre serveur Minecraft",
+        "de": "Dein Minecraft-Server",
+        "es": "Su servidor Minecraft"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "Read like the multiplayer screen of the game, without any account. At home or online. Up to three servers. Not affiliated with Mojang or Microsoft.",
+        "fr": "Lu comme l'écran multijoueur du jeu, sans aucun compte. À la maison ou en ligne. Jusqu'à trois serveurs. Sans lien avec Mojang ni Microsoft.",
+        "de": "Gelesen wie der Mehrspieler-Bildschirm des Spiels, ohne Konto. Zu Hause oder online. Bis zu drei Server. Nicht mit Mojang oder Microsoft verbunden.",
+        "es": "Leído como la pantalla multijugador del juego, sin ninguna cuenta. En casa o en línea. Hasta tres servidores. Sin relación con Mojang ni Microsoft."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://minecraft.wiki/w/Server.properties",
+          "label": {
+            "en": "server.properties (Minecraft Wiki)",
+            "fr": "server.properties (Minecraft Wiki)",
+            "de": "server.properties (Minecraft Wiki)",
+            "es": "server.properties (Minecraft Wiki)"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
+      "key": "server_1_address",
+      "type": "string",
+      "label": {
+        "en": "Address",
+        "fr": "Adresse",
+        "de": "Adresse",
+        "es": "Dirección"
       },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
+      "description": {
+        "en": "As typed in the game: IP address or name, :port if not the default (Java 25565, Bedrock 19132).",
+        "fr": "Comme dans le jeu : adresse IP ou nom, :port s'il n'est pas standard (Java 25565, Bedrock 19132).",
+        "de": "Wie im Spiel: IP-Adresse oder Name, :Port, falls nicht Standard (Java 25565, Bedrock 19132).",
+        "es": "Como en el juego: dirección IP o nombre, :puerto si no es el estándar (Java 25565, Bedrock 19132)."
+      },
+      "placeholder": {
+        "en": "e.g. 192.168.1.20",
+        "fr": "ex. 192.168.1.20",
+        "de": "z. B. 192.168.1.20",
+        "es": "p. ej. 192.168.1.20"
+      },
       "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
+      "default": ""
     },
     {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
-      },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
-    },
-    {
-      "key": "unit",
+      "key": "server_1_edition",
       "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
+      "label": {
+        "en": "Edition",
+        "fr": "Édition",
+        "de": "Edition",
+        "es": "Edición"
+      },
+      "description": {
+        "en": "Java Edition (PC, Mac, Linux) or Bedrock Edition (consoles, tablets, Windows).",
+        "fr": "Java Edition (PC, Mac, Linux) ou Bedrock Edition (consoles, tablettes, Windows).",
+        "de": "Java Edition (PC, Mac, Linux) oder Bedrock Edition (Konsolen, Tablets, Windows).",
+        "es": "Java Edition (PC, Mac, Linux) o Bedrock Edition (consolas, tabletas, Windows)."
+      },
       "required": false,
-      "default": "celsius",
+      "default": "java",
       "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
+        {
+          "value": "java",
+          "label": {
+            "en": "Java Edition",
+            "fr": "Java Edition",
+            "de": "Java Edition",
+            "es": "Java Edition"
+          }
+        },
+        {
+          "value": "bedrock",
+          "label": {
+            "en": "Bedrock Edition",
+            "fr": "Bedrock Edition",
+            "de": "Bedrock Edition",
+            "es": "Bedrock Edition"
+          }
+        }
       ]
     },
     {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "key": "server_1_name",
+      "type": "string",
+      "label": {
+        "en": "Name",
+        "fr": "Nom",
+        "de": "Name",
+        "es": "Nombre"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+        "en": "Name of the device in Gladys. Empty: \"Minecraft\" followed by the address.",
+        "fr": "Nom de l'appareil dans Gladys. Vide : « Minecraft » suivi de l'adresse.",
+        "de": "Name des Geräts in Gladys. Leer: „Minecraft“ gefolgt von der Adresse.",
+        "es": "Nombre del dispositivo en Gladys. Vacío: «Minecraft» seguido de la dirección."
+      },
+      "placeholder": {
+        "en": "e.g. Kids' server",
+        "fr": "ex. Serveur des enfants",
+        "de": "z. B. Server der Kinder",
+        "es": "p. ej. Servidor de los niños"
       },
       "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "default": ""
+    },
+    {
+      "key": "server_1_rcon",
+      "type": "boolean",
+      "label": {
+        "en": "Use RCON (Java only)",
+        "fr": "Utiliser RCON (Java seulement)",
+        "de": "RCON verwenden (nur Java)",
+        "es": "Usar RCON (solo Java)"
+      },
+      "description": {
+        "en": "Full list of players and chat messages from scenes. Needs enable-rcon=true and rcon.password in server.properties.",
+        "fr": "Liste complète des joueurs et messages dans le chat depuis les scènes. Demande enable-rcon=true et rcon.password dans server.properties.",
+        "de": "Vollständige Spielerliste und Chatnachrichten aus Szenen. Erfordert enable-rcon=true und rcon.password in server.properties.",
+        "es": "Lista completa de jugadores y mensajes de chat desde las escenas. Requiere enable-rcon=true y rcon.password en server.properties."
+      },
+      "required": false,
+      "default": false
+    },
+    {
+      "key": "server_1_rcon_port",
+      "type": "number",
+      "label": {
+        "en": "RCON port",
+        "fr": "Port RCON",
+        "de": "RCON-Port",
+        "es": "Puerto RCON"
+      },
+      "description": {
+        "en": "rcon.port of server.properties, 25575 by default.",
+        "fr": "rcon.port de server.properties, 25575 par défaut.",
+        "de": "rcon.port aus server.properties, standardmäßig 25575.",
+        "es": "rcon.port de server.properties, 25575 por defecto."
+      },
+      "required": false,
+      "default": 25575,
+      "min": 1,
+      "max": 65535
+    },
+    {
+      "key": "server_1_rcon_password",
+      "type": "secret",
+      "label": {
+        "en": "RCON password",
+        "fr": "Mot de passe RCON",
+        "de": "RCON-Passwort",
+        "es": "Contraseña RCON"
+      },
+      "description": {
+        "en": "rcon.password of server.properties. Use a password of its own: RCON can run any command.",
+        "fr": "rcon.password de server.properties. Un mot de passe à part : RCON peut lancer n'importe quelle commande.",
+        "de": "rcon.password aus server.properties. Ein eigenes Passwort: RCON kann jeden Befehl ausführen.",
+        "es": "rcon.password de server.properties. Una contraseña propia: RCON puede ejecutar cualquier comando."
+      },
+      "required": false
+    },
+    {
+      "key": "server_2",
+      "type": "section",
+      "label": {
+        "en": "Second server (optional)",
+        "fr": "Deuxième serveur (facultatif)",
+        "de": "Zweiter Server (optional)",
+        "es": "Segundo servidor (opcional)"
+      },
+      "description": {
+        "en": "Same fields, for another Minecraft server.",
+        "fr": "Les mêmes champs, pour un autre serveur Minecraft.",
+        "de": "Dieselben Felder, für einen weiteren Minecraft-Server.",
+        "es": "Los mismos campos, para otro servidor Minecraft."
+      }
+    },
+    {
+      "key": "server_2_address",
+      "type": "string",
+      "label": {
+        "en": "Address",
+        "fr": "Adresse",
+        "de": "Adresse",
+        "es": "Dirección"
+      },
+      "description": {
+        "en": "As typed in the game: IP address or name, :port if not the default (Java 25565, Bedrock 19132).",
+        "fr": "Comme dans le jeu : adresse IP ou nom, :port s'il n'est pas standard (Java 25565, Bedrock 19132).",
+        "de": "Wie im Spiel: IP-Adresse oder Name, :Port, falls nicht Standard (Java 25565, Bedrock 19132).",
+        "es": "Como en el juego: dirección IP o nombre, :puerto si no es el estándar (Java 25565, Bedrock 19132)."
+      },
+      "placeholder": {
+        "en": "e.g. 192.168.1.20",
+        "fr": "ex. 192.168.1.20",
+        "de": "z. B. 192.168.1.20",
+        "es": "p. ej. 192.168.1.20"
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "server_2_edition",
+      "type": "select",
+      "label": {
+        "en": "Edition",
+        "fr": "Édition",
+        "de": "Edition",
+        "es": "Edición"
+      },
+      "description": {
+        "en": "Java Edition (PC, Mac, Linux) or Bedrock Edition (consoles, tablets, Windows).",
+        "fr": "Java Edition (PC, Mac, Linux) ou Bedrock Edition (consoles, tablettes, Windows).",
+        "de": "Java Edition (PC, Mac, Linux) oder Bedrock Edition (Konsolen, Tablets, Windows).",
+        "es": "Java Edition (PC, Mac, Linux) o Bedrock Edition (consolas, tabletas, Windows)."
+      },
+      "required": false,
+      "default": "java",
+      "options": [
+        {
+          "value": "java",
+          "label": {
+            "en": "Java Edition",
+            "fr": "Java Edition",
+            "de": "Java Edition",
+            "es": "Java Edition"
+          }
+        },
+        {
+          "value": "bedrock",
+          "label": {
+            "en": "Bedrock Edition",
+            "fr": "Bedrock Edition",
+            "de": "Bedrock Edition",
+            "es": "Bedrock Edition"
+          }
+        }
+      ]
+    },
+    {
+      "key": "server_2_name",
+      "type": "string",
+      "label": {
+        "en": "Name",
+        "fr": "Nom",
+        "de": "Name",
+        "es": "Nombre"
+      },
+      "description": {
+        "en": "Name of the device in Gladys. Empty: \"Minecraft\" followed by the address.",
+        "fr": "Nom de l'appareil dans Gladys. Vide : « Minecraft » suivi de l'adresse.",
+        "de": "Name des Geräts in Gladys. Leer: „Minecraft“ gefolgt von der Adresse.",
+        "es": "Nombre del dispositivo en Gladys. Vacío: «Minecraft» seguido de la dirección."
+      },
+      "placeholder": {
+        "en": "e.g. Kids' server",
+        "fr": "ex. Serveur des enfants",
+        "de": "z. B. Server der Kinder",
+        "es": "p. ej. Servidor de los niños"
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "server_2_rcon",
+      "type": "boolean",
+      "label": {
+        "en": "Use RCON (Java only)",
+        "fr": "Utiliser RCON (Java seulement)",
+        "de": "RCON verwenden (nur Java)",
+        "es": "Usar RCON (solo Java)"
+      },
+      "description": {
+        "en": "Full list of players and chat messages from scenes. Needs enable-rcon=true and rcon.password in server.properties.",
+        "fr": "Liste complète des joueurs et messages dans le chat depuis les scènes. Demande enable-rcon=true et rcon.password dans server.properties.",
+        "de": "Vollständige Spielerliste und Chatnachrichten aus Szenen. Erfordert enable-rcon=true und rcon.password in server.properties.",
+        "es": "Lista completa de jugadores y mensajes de chat desde las escenas. Requiere enable-rcon=true y rcon.password en server.properties."
+      },
+      "required": false,
+      "default": false
+    },
+    {
+      "key": "server_2_rcon_port",
+      "type": "number",
+      "label": {
+        "en": "RCON port",
+        "fr": "Port RCON",
+        "de": "RCON-Port",
+        "es": "Puerto RCON"
+      },
+      "description": {
+        "en": "rcon.port of server.properties, 25575 by default.",
+        "fr": "rcon.port de server.properties, 25575 par défaut.",
+        "de": "rcon.port aus server.properties, standardmäßig 25575.",
+        "es": "rcon.port de server.properties, 25575 por defecto."
+      },
+      "required": false,
+      "default": 25575,
+      "min": 1,
+      "max": 65535
+    },
+    {
+      "key": "server_2_rcon_password",
+      "type": "secret",
+      "label": {
+        "en": "RCON password",
+        "fr": "Mot de passe RCON",
+        "de": "RCON-Passwort",
+        "es": "Contraseña RCON"
+      },
+      "description": {
+        "en": "rcon.password of server.properties. Use a password of its own: RCON can run any command.",
+        "fr": "rcon.password de server.properties. Un mot de passe à part : RCON peut lancer n'importe quelle commande.",
+        "de": "rcon.password aus server.properties. Ein eigenes Passwort: RCON kann jeden Befehl ausführen.",
+        "es": "rcon.password de server.properties. Una contraseña propia: RCON puede ejecutar cualquier comando."
+      },
+      "required": false
+    },
+    {
+      "key": "server_3",
+      "type": "section",
+      "label": {
+        "en": "Third server (optional)",
+        "fr": "Troisième serveur (facultatif)",
+        "de": "Dritter Server (optional)",
+        "es": "Tercer servidor (opcional)"
+      },
+      "description": {
+        "en": "Same fields, for another Minecraft server.",
+        "fr": "Les mêmes champs, pour un autre serveur Minecraft.",
+        "de": "Dieselben Felder, für einen weiteren Minecraft-Server.",
+        "es": "Los mismos campos, para otro servidor Minecraft."
+      }
+    },
+    {
+      "key": "server_3_address",
+      "type": "string",
+      "label": {
+        "en": "Address",
+        "fr": "Adresse",
+        "de": "Adresse",
+        "es": "Dirección"
+      },
+      "description": {
+        "en": "As typed in the game: IP address or name, :port if not the default (Java 25565, Bedrock 19132).",
+        "fr": "Comme dans le jeu : adresse IP ou nom, :port s'il n'est pas standard (Java 25565, Bedrock 19132).",
+        "de": "Wie im Spiel: IP-Adresse oder Name, :Port, falls nicht Standard (Java 25565, Bedrock 19132).",
+        "es": "Como en el juego: dirección IP o nombre, :puerto si no es el estándar (Java 25565, Bedrock 19132)."
+      },
+      "placeholder": {
+        "en": "e.g. 192.168.1.20",
+        "fr": "ex. 192.168.1.20",
+        "de": "z. B. 192.168.1.20",
+        "es": "p. ej. 192.168.1.20"
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "server_3_edition",
+      "type": "select",
+      "label": {
+        "en": "Edition",
+        "fr": "Édition",
+        "de": "Edition",
+        "es": "Edición"
+      },
+      "description": {
+        "en": "Java Edition (PC, Mac, Linux) or Bedrock Edition (consoles, tablets, Windows).",
+        "fr": "Java Edition (PC, Mac, Linux) ou Bedrock Edition (consoles, tablettes, Windows).",
+        "de": "Java Edition (PC, Mac, Linux) oder Bedrock Edition (Konsolen, Tablets, Windows).",
+        "es": "Java Edition (PC, Mac, Linux) o Bedrock Edition (consolas, tabletas, Windows)."
+      },
+      "required": false,
+      "default": "java",
+      "options": [
+        {
+          "value": "java",
+          "label": {
+            "en": "Java Edition",
+            "fr": "Java Edition",
+            "de": "Java Edition",
+            "es": "Java Edition"
+          }
+        },
+        {
+          "value": "bedrock",
+          "label": {
+            "en": "Bedrock Edition",
+            "fr": "Bedrock Edition",
+            "de": "Bedrock Edition",
+            "es": "Bedrock Edition"
+          }
+        }
+      ]
+    },
+    {
+      "key": "server_3_name",
+      "type": "string",
+      "label": {
+        "en": "Name",
+        "fr": "Nom",
+        "de": "Name",
+        "es": "Nombre"
+      },
+      "description": {
+        "en": "Name of the device in Gladys. Empty: \"Minecraft\" followed by the address.",
+        "fr": "Nom de l'appareil dans Gladys. Vide : « Minecraft » suivi de l'adresse.",
+        "de": "Name des Geräts in Gladys. Leer: „Minecraft“ gefolgt von der Adresse.",
+        "es": "Nombre del dispositivo en Gladys. Vacío: «Minecraft» seguido de la dirección."
+      },
+      "placeholder": {
+        "en": "e.g. Kids' server",
+        "fr": "ex. Serveur des enfants",
+        "de": "z. B. Server der Kinder",
+        "es": "p. ej. Servidor de los niños"
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "server_3_rcon",
+      "type": "boolean",
+      "label": {
+        "en": "Use RCON (Java only)",
+        "fr": "Utiliser RCON (Java seulement)",
+        "de": "RCON verwenden (nur Java)",
+        "es": "Usar RCON (solo Java)"
+      },
+      "description": {
+        "en": "Full list of players and chat messages from scenes. Needs enable-rcon=true and rcon.password in server.properties.",
+        "fr": "Liste complète des joueurs et messages dans le chat depuis les scènes. Demande enable-rcon=true et rcon.password dans server.properties.",
+        "de": "Vollständige Spielerliste und Chatnachrichten aus Szenen. Erfordert enable-rcon=true und rcon.password in server.properties.",
+        "es": "Lista completa de jugadores y mensajes de chat desde las escenas. Requiere enable-rcon=true y rcon.password en server.properties."
+      },
+      "required": false,
+      "default": false
+    },
+    {
+      "key": "server_3_rcon_port",
+      "type": "number",
+      "label": {
+        "en": "RCON port",
+        "fr": "Port RCON",
+        "de": "RCON-Port",
+        "es": "Puerto RCON"
+      },
+      "description": {
+        "en": "rcon.port of server.properties, 25575 by default.",
+        "fr": "rcon.port de server.properties, 25575 par défaut.",
+        "de": "rcon.port aus server.properties, standardmäßig 25575.",
+        "es": "rcon.port de server.properties, 25575 por defecto."
+      },
+      "required": false,
+      "default": 25575,
+      "min": 1,
+      "max": 65535
+    },
+    {
+      "key": "server_3_rcon_password",
+      "type": "secret",
+      "label": {
+        "en": "RCON password",
+        "fr": "Mot de passe RCON",
+        "de": "RCON-Passwort",
+        "es": "Contraseña RCON"
+      },
+      "description": {
+        "en": "rcon.password of server.properties. Use a password of its own: RCON can run any command.",
+        "fr": "rcon.password de server.properties. Un mot de passe à part : RCON peut lancer n'importe quelle commande.",
+        "de": "rcon.password aus server.properties. Ein eigenes Passwort: RCON kann jeden Befehl ausführen.",
+        "es": "rcon.password de server.properties. Una contraseña propia: RCON puede ejecutar cualquier comando."
+      },
+      "required": false
+    },
+    {
+      "key": "general",
+      "type": "section",
+      "label": {
+        "en": "General",
+        "fr": "Général",
+        "de": "Allgemein",
+        "es": "General"
+      },
+      "description": {
+        "en": "For every server.",
+        "fr": "Pour tous les serveurs.",
+        "de": "Für alle Server.",
+        "es": "Para todos los servidores."
+      }
+    },
+    {
+      "key": "poll_interval",
+      "type": "select",
+      "label": {
+        "en": "Refresh interval",
+        "fr": "Intervalle de rafraîchissement",
+        "de": "Aktualisierungsintervall",
+        "es": "Intervalo de actualización"
+      },
+      "description": {
+        "en": "How often the servers are read: an arrival is seen at most this late.",
+        "fr": "Fréquence de lecture des serveurs : une arrivée est vue au plus avec ce retard.",
+        "de": "Wie oft die Server gelesen werden: Ein Beitritt wird höchstens so spät erkannt.",
+        "es": "Con qué frecuencia se leen los servidores: una llegada se detecta como mucho con este retraso."
+      },
+      "required": false,
+      "default": "30",
+      "options": [
+        {
+          "value": "15",
+          "label": {
+            "en": "15 seconds",
+            "fr": "15 secondes",
+            "de": "15 Sekunden",
+            "es": "15 segundos"
+          }
+        },
+        {
+          "value": "30",
+          "label": {
+            "en": "30 seconds",
+            "fr": "30 secondes",
+            "de": "30 Sekunden",
+            "es": "30 segundos"
+          }
+        },
+        {
+          "value": "60",
+          "label": {
+            "en": "1 minute",
+            "fr": "1 minute",
+            "de": "1 Minute",
+            "es": "1 minuto"
+          }
+        },
+        {
+          "value": "120",
+          "label": {
+            "en": "2 minutes",
+            "fr": "2 minutes",
+            "de": "2 Minuten",
+            "es": "2 minutos"
+          }
+        },
+        {
+          "value": "300",
+          "label": {
+            "en": "5 minutes",
+            "fr": "5 minutes",
+            "de": "5 Minuten",
+            "es": "5 minutos"
+          }
+        }
+      ]
+    },
+    {
+      "key": "language",
+      "type": "select",
+      "label": {
+        "en": "Language of the feature names",
+        "fr": "Langue des noms de fonctionnalités",
+        "de": "Sprache der Funktionsnamen",
+        "es": "Idioma de los nombres de funciones"
+      },
+      "description": {
+        "en": "Names given to the features when a device is added, and texts of the players list and of the scene events.",
+        "fr": "Noms donnés aux fonctionnalités à l'ajout d'un appareil, et textes de la liste des joueurs et des événements de scène.",
+        "de": "Namen der Funktionen beim Hinzufügen eines Geräts sowie Texte der Spielerliste und der Szenen-Ereignisse.",
+        "es": "Nombres de las funciones al añadir un dispositivo y textos de la lista de jugadores y de los eventos de escena."
+      },
+      "required": false,
+      "default": "fr",
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "description": {
+        "en": "Reads every server now and reports what it finds.",
+        "fr": "Lit chaque serveur maintenant et indique ce qu'il trouve.",
+        "de": "Liest jeden Server sofort und meldet, was er findet.",
+        "es": "Lee cada servidor ahora e indica lo que encuentra."
+      },
       "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ]
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
+      "key": "player_joined",
+      "label": {
+        "en": "A player joined the Minecraft server",
+        "fr": "Un joueur a rejoint le serveur Minecraft",
+        "de": "Ein Spieler ist dem Minecraft-Server beigetreten",
+        "es": "Un jugador se ha unido al servidor Minecraft"
+      },
       "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+        "en": "Java Edition: the server must show who plays (RCON, or 12 players at most without hidden names).",
+        "fr": "Java Edition : le serveur doit dire qui joue (RCON, ou 12 joueurs au plus sans noms masqués).",
+        "de": "Java Edition: Der Server muss zeigen, wer spielt (RCON, oder höchstens 12 Spieler ohne verborgene Namen).",
+        "es": "Java Edition: el servidor debe indicar quién juega (RCON, o 12 jugadores como máximo sin nombres ocultos)."
       },
       "fields": [
         {
           "key": "device",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
+          "label": {
+            "en": "Server (empty: any)",
+            "fr": "Serveur (vide : n'importe lequel)",
+            "de": "Server (leer: beliebig)",
+            "es": "Servidor (vacío: cualquiera)"
+          }
         },
         {
-          "key": "target",
-          "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
-          "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
-          ]
+          "key": "player",
+          "type": "string",
+          "label": {
+            "en": "Player name (empty: anyone)",
+            "fr": "Pseudo (vide : n'importe qui)",
+            "de": "Spielername (leer: beliebig)",
+            "es": "Nombre del jugador (vacío: cualquiera)"
+          },
+          "description": {
+            "en": "Exactly as in the game, case included.",
+            "fr": "Exactement comme dans le jeu, majuscules comprises.",
+            "de": "Genau wie im Spiel, mit Groß- und Kleinschreibung.",
+            "es": "Exactamente como en el juego, mayúsculas incluidas."
+          },
+          "placeholder": {
+            "en": "e.g. Steve",
+            "fr": "ex. Steve",
+            "de": "z. B. Steve",
+            "es": "p. ej. Steve"
+          }
         }
       ],
       "variables": [
         {
-          "key": "target",
+          "key": "player",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "label": {
+            "en": "Player name",
+            "fr": "Pseudo du joueur",
+            "de": "Name des Spielers",
+            "es": "Nombre del jugador"
+          }
+        },
+        {
+          "key": "server",
+          "type": "string",
+          "label": {
+            "en": "Server name",
+            "fr": "Nom du serveur",
+            "de": "Name des Servers",
+            "es": "Nombre del servidor"
+          }
+        },
+        {
+          "key": "device",
+          "type": "string",
+          "label": {
+            "en": "Server device",
+            "fr": "Appareil du serveur",
+            "de": "Gerät des Servers",
+            "es": "Dispositivo del servidor"
+          }
+        },
+        {
+          "key": "players_online",
+          "type": "number",
+          "label": {
+            "en": "Players online",
+            "fr": "Joueurs connectés",
+            "de": "Spieler online",
+            "es": "Jugadores conectados"
+          }
+        }
+      ]
+    },
+    {
+      "key": "player_left",
+      "label": {
+        "en": "A player left the Minecraft server",
+        "fr": "Un joueur a quitté le serveur Minecraft",
+        "de": "Ein Spieler hat den Minecraft-Server verlassen",
+        "es": "Un jugador ha salido del servidor Minecraft"
+      },
+      "description": {
+        "en": "Java Edition, same conditions. Not fired when the whole server stops: see \"Minecraft server offline\".",
+        "fr": "Java Edition, mêmes conditions. Pas quand tout le serveur s'arrête : voir « Serveur Minecraft hors ligne ».",
+        "de": "Java Edition, gleiche Bedingungen. Nicht, wenn der ganze Server stoppt: siehe „Minecraft-Server offline“.",
+        "es": "Java Edition, mismas condiciones. No cuando se detiene todo el servidor: vea «Servidor Minecraft fuera de línea»."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Server (empty: any)",
+            "fr": "Serveur (vide : n'importe lequel)",
+            "de": "Server (leer: beliebig)",
+            "es": "Servidor (vacío: cualquiera)"
+          }
+        },
+        {
+          "key": "player",
+          "type": "string",
+          "label": {
+            "en": "Player name (empty: anyone)",
+            "fr": "Pseudo (vide : n'importe qui)",
+            "de": "Spielername (leer: beliebig)",
+            "es": "Nombre del jugador (vacío: cualquiera)"
+          },
+          "description": {
+            "en": "Exactly as in the game, case included.",
+            "fr": "Exactement comme dans le jeu, majuscules comprises.",
+            "de": "Genau wie im Spiel, mit Groß- und Kleinschreibung.",
+            "es": "Exactamente como en el juego, mayúsculas incluidas."
+          },
+          "placeholder": {
+            "en": "e.g. Steve",
+            "fr": "ex. Steve",
+            "de": "z. B. Steve",
+            "es": "p. ej. Steve"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "player",
+          "type": "string",
+          "label": {
+            "en": "Player name",
+            "fr": "Pseudo du joueur",
+            "de": "Name des Spielers",
+            "es": "Nombre del jugador"
+          }
+        },
+        {
+          "key": "server",
+          "type": "string",
+          "label": {
+            "en": "Server name",
+            "fr": "Nom du serveur",
+            "de": "Name des Servers",
+            "es": "Nombre del servidor"
+          }
+        },
+        {
+          "key": "device",
+          "type": "string",
+          "label": {
+            "en": "Server device",
+            "fr": "Appareil du serveur",
+            "de": "Gerät des Servers",
+            "es": "Dispositivo del servidor"
+          }
+        },
+        {
+          "key": "players_online",
+          "type": "number",
+          "label": {
+            "en": "Players online",
+            "fr": "Joueurs connectés",
+            "de": "Spieler online",
+            "es": "Jugadores conectados"
+          }
+        },
+        {
+          "key": "minutes_played",
+          "type": "number",
+          "label": {
+            "en": "Minutes played (empty if unknown)",
+            "fr": "Minutes de jeu (vide si inconnu)",
+            "de": "Gespielte Minuten (leer, wenn unbekannt)",
+            "es": "Minutos jugados (vacío si se desconoce)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "server_offline",
+      "label": {
+        "en": "Minecraft server offline",
+        "fr": "Serveur Minecraft hors ligne",
+        "de": "Minecraft-Server offline",
+        "es": "Servidor Minecraft fuera de línea"
+      },
+      "description": {
+        "en": "The server no longer answers, twice in a row (a single lost answer is ignored).",
+        "fr": "Le serveur ne répond plus, deux fois de suite (une seule réponse perdue est ignorée).",
+        "de": "Der Server antwortet nicht mehr, zweimal hintereinander (eine einzelne verlorene Antwort wird ignoriert).",
+        "es": "El servidor ya no responde, dos veces seguidas (una sola respuesta perdida se ignora)."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Server (empty: any)",
+            "fr": "Serveur (vide : n'importe lequel)",
+            "de": "Server (leer: beliebig)",
+            "es": "Servidor (vacío: cualquiera)"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "server",
+          "type": "string",
+          "label": {
+            "en": "Server name",
+            "fr": "Nom du serveur",
+            "de": "Name des Servers",
+            "es": "Nombre del servidor"
+          }
+        },
+        {
+          "key": "device",
+          "type": "string",
+          "label": {
+            "en": "Server device",
+            "fr": "Appareil du serveur",
+            "de": "Gerät des Servers",
+            "es": "Dispositivo del servidor"
+          }
+        },
+        {
+          "key": "error",
+          "type": "string",
+          "label": {
+            "en": "Reason",
+            "fr": "Raison",
+            "de": "Grund",
+            "es": "Motivo"
+          }
         }
       ]
     }
   ],
   "scene_actions": [
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+      "key": "send_chat_message",
+      "label": {
+        "en": "Send a message in the Minecraft chat",
+        "fr": "Envoyer un message dans le chat Minecraft",
+        "de": "Nachricht im Minecraft-Chat senden",
+        "es": "Enviar un mensaje al chat de Minecraft"
       },
-      "timeout_seconds": 15,
+      "description": {
+        "en": "Shown to every player as [Rcon] followed by the message. Needs RCON (Java Edition).",
+        "fr": "Affiché à tous les joueurs sous la forme [Rcon] suivi du message. Demande RCON (Java Edition).",
+        "de": "Wird allen Spielern als [Rcon] gefolgt von der Nachricht angezeigt. Erfordert RCON (Java Edition).",
+        "es": "Se muestra a todos los jugadores como [Rcon] seguido del mensaje. Requiere RCON (Java Edition)."
+      },
+      "timeout_seconds": 20,
       "fields": [
         {
           "key": "device",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
+          "label": {
+            "en": "Server (empty: every server with RCON)",
+            "fr": "Serveur (vide : tous ceux avec RCON)",
+            "de": "Server (leer: alle mit RCON)",
+            "es": "Servidor (vacío: todos con RCON)"
+          }
+        },
+        {
+          "key": "message",
+          "type": "string",
+          "label": {
+            "en": "Message",
+            "fr": "Message",
+            "de": "Nachricht",
+            "es": "Mensaje"
+          },
+          "description": {
+            "en": "One line, 256 characters at most.",
+            "fr": "Une ligne, 256 caractères au plus.",
+            "de": "Eine Zeile, höchstens 256 Zeichen.",
+            "es": "Una línea, 256 caracteres como máximo."
+          },
+          "placeholder": {
+            "en": "e.g. Dinner is ready!",
+            "fr": "ex. À table !",
+            "de": "z. B. Essen ist fertig!",
+            "es": "p. ej. ¡A comer!"
+          },
           "required": true
         }
       ],
       "outputs": [
         {
-          "key": "signalled",
-          "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "key": "servers",
+          "type": "number",
+          "label": {
+            "en": "Servers reached",
+            "fr": "Serveurs atteints",
+            "de": "Erreichte Server",
+            "es": "Servidores alcanzados"
+          }
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "minecraft",
+      "label": {
+        "en": "Minecraft",
+        "fr": "Minecraft",
+        "de": "Minecraft",
+        "es": "Minecraft"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "Whether each server is online, players online and who is playing.",
+        "fr": "Si chaque serveur est en ligne, joueurs connectés et qui joue.",
+        "de": "Ob jeder Server online ist, Spieler online und wer spielt.",
+        "es": "Si cada servidor está en línea, jugadores conectados y quién juega."
+      },
+      "icon": "box",
+      "settings": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Server (empty: all)",
+            "fr": "Serveur (vide : tous)",
+            "de": "Server (leer: alle)",
+            "es": "Servidor (vacío: todos)"
+          },
+          "required": false
+        }
+      ]
     }
   ]
 }

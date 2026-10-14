@@ -1,0 +1,25 @@
+{
+  "players": {
+    "online": 3,
+    "max": 10,
+    "sample": [
+      {
+        "id": "1",
+        "name": "Player 1"
+      },
+      {
+        "id": "2",
+        "name": "Player 2"
+      },
+      {
+        "id": "3",
+        "name": "Player 3"
+      }
+    ]
+  },
+  "version": {
+    "name": "Dummy Version",
+    "protocol": 123
+  },
+  "description": "Dummy MOTD"
+}

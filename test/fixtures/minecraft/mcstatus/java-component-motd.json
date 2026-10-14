@@ -1,0 +1,62 @@
+{
+  "description": {
+    "extra": [
+      {
+        "text": "1"
+      },
+      {
+        "color": "#b3eeff",
+        "text": "2"
+      },
+      {
+        "obfuscated": true,
+        "color": "black",
+        "text": "3"
+      },
+      {
+        "bold": true,
+        "strikethrough": true,
+        "color": "dark_blue",
+        "text": "4"
+      },
+      {
+        "italic": true,
+        "color": "dark_green",
+        "text": "5"
+      },
+      {
+        "underlined": true,
+        "color": "dark_aqua",
+        "text": "6"
+      },
+      {
+        "color": "dark_aqua",
+        "text": "7"
+      },
+      {
+        "color": "dark_red",
+        "text": "8"
+      },
+      {
+        "color": "dark_purple",
+        "text": "9"
+      },
+      {
+        "color": "gold",
+        "text": "10"
+      },
+      {
+        "translate": "some.random.string"
+      }
+    ],
+    "text": "top"
+  },
+  "players": {
+    "max": 20,
+    "online": 0
+  },
+  "version": {
+    "name": "1.8-pre1",
+    "protocol": 44
+  }
+}
